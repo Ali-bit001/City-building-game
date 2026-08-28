@@ -21,17 +21,10 @@
         </div>
     </div>
     <script type="module">
-        import {createScene} from "./src/scene.js";
-        import {createCity} from "./src/city.js";
+        import {createGame} from "./src/game.js";
         window.onload = () =>{
-            const city = createCity(8);
-            window.scene = createScene();
-            scene.initialize(city);
-
-            document.addEventListener("mousedown",window.scene.onMouseDown,false);
-            document.addEventListener("mouseup",window.scene.onMouseUp,false);
-            document.addEventListener("mousemove",window.scene.onMouseMove,false);
-            window.scene.start();
+            window.game = createGame;
+            window.game();
         }
     </script>
 </body>
