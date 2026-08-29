@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import * as THREE from "https://unpkg.com/three/build/three.module.js";
 export function createCamera(gameWindow){
     const LEFT_MOUSE_BUTTON = 0;
     const MIDDLE_MOUSE_BUTTON = 1;
