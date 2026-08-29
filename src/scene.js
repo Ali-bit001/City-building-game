@@ -13,8 +13,14 @@ export function createScene(){
     renderer.setSize(gameWindow.offsetWidth,gameWindow.offsetHeight);
     gameWindow.appendChild(renderer.domElement);
 
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let selectedObject = undefined;
+
     let terrain = [];
     let buildings = [];
+
+    let onObjectSelected = undefined;
     function initialize(city){
         scene.clear();
         setupLights();
@@ -87,6 +93,21 @@ export function createScene(){
         renderer.setAnimationLoop(null);
     }
     function onMouseDown(event){
+        mouse.x = (event.clientX/renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = -(event.clientY/renderer.domElement.clientHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse,camera.camera);
+        const intersects = raycaster.intersectObjects(scene.children,false);
+        if(intersects.length > 0){
+            if(selectedObject){
+                selectedObject.material.emissive.setHex(0x000000);
+            }
+            selectedObject = intersects[0].object;
+            selectedObject.material.emissive.setHex(0x555555);
+            console.log(`Selected object at (${selectedObject.userData.x},${selectedObject.userData.y}) with assetId ${selectedObject.userData.assetId}`);
+            if(this.onObjectSelected){
+                this.onObjectSelected(selectedObject);
+            }
+        }
         camera.onMouseDown(event);
     }
     function onMouseUp(event){
@@ -95,5 +116,5 @@ export function createScene(){
     function onMouseMove(event){
         camera.onMouseMove(event);
     }
-    return {update,start,stop,onMouseDown,onMouseUp,onMouseMove,initialize};
+    return {onObjectSelected,update,start,stop,onMouseDown,onMouseUp,onMouseMove,initialize};
 }

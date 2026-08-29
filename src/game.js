@@ -5,9 +5,15 @@ export function createGame(){
     const scene = createScene();
     scene.initialize(city);
 
-    document.addEventListener("mousedown",scene.onMouseDown,false);
-    document.addEventListener("mouseup",scene.onMouseUp,false);
-    document.addEventListener("mousemove",scene.onMouseMove,false);
+    scene.onObjectSelected = (object)=>{
+        console.log(object);
+        let {x,y} = object.userData;
+        const tile = city.data[x][y];
+        console.log(tile);
+    }
+    document.addEventListener("mousedown",scene.onMouseDown.bind(scene),false);
+    document.addEventListener("mouseup",scene.onMouseUp.bind(scene),false);
+    document.addEventListener("mousemove",scene.onMouseMove.bind(scene),false);
     const game={
         update(){
             city.update();
