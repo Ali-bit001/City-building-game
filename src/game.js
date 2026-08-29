@@ -1,6 +1,7 @@
 import {createScene} from "./scene.js";
 import {createCity} from "./city.js";
 export function createGame(){
+    let activeTool = "";
     const city = createCity(25);
     const scene = createScene();
     scene.initialize(city);
@@ -9,7 +10,14 @@ export function createGame(){
         console.log(object);
         let {x,y} = object.userData;
         const tile = city.data[x][y];
-        console.log(tile);
+        if(activeTool === "bulldoze"){
+            tile.buildingId = undefined;
+            scene.update(city);
+        }
+        else if(!tile.buildingId){
+            tile.buildingId = activeTool;
+            scene.update(city);
+        }
     }
     document.addEventListener("mousedown",scene.onMouseDown.bind(scene),false);
     document.addEventListener("mouseup",scene.onMouseUp.bind(scene),false);
@@ -18,11 +26,14 @@ export function createGame(){
         update(){
             city.update();
             scene.update(city);
+        },
+        setActiveToolId(toolId){
+            activeTool = toolId;
         }
     };
     setInterval(()=>{
         game.update();
     },1000);
     scene.start();
-    return {game}
+    return game;
 }

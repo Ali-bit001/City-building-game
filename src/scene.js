@@ -57,7 +57,7 @@ export function createScene(){
                     buildings[x][y] = undefined;
                 }
                 //update
-                if(newBuildingId !== currentBuildingId){
+                if(newBuildingId && newBuildingId !== currentBuildingId){
                     if(buildings[x][y]){
                         scene.remove(buildings[x][y]);
                     }
