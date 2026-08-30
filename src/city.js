@@ -13,7 +13,7 @@ export function createCity(size){
     function update(){
         for(let x = 0;x < size;++x){
             for(let y = 0;y < size;++y){
-                data[x][y].update();
+                data[x][y].building?.update();
             }
         }
     }
@@ -26,10 +26,7 @@ function createTile(x,y){
     return {
         x,
         y,
-        buildingId : undefined,
+        building : undefined,
         terrainId : "grass",
-        update(){
-
-        }
     };
 }

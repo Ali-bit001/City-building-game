@@ -35,7 +35,7 @@ export function createScene(){
                 //add the mesh to meshes array
                 const terrainId = city.data[x][y].terrainId;
                 //grass geometry
-                const grassMesh = createAssetInstance(terrainId,x,y);
+                const grassMesh = createAssetInstance(terrainId,x,y,city.data[x][y].building);
                 if(grassMesh){
                     scene.add(grassMesh);
                 }
@@ -49,23 +49,19 @@ export function createScene(){
     function update(city){
         for(let x = 0;x < city.size;++x){
             for(let y = 0;y < city.size;++y){
-                const currentBuildingId = buildings[x][y]?.userData.assetId;
-                const newBuildingId = city.data[x][y].buildingId;
+                const tile = city.data[x][y];
+                const existingBuildingMesh = buildings[x][y];
                 //if player removes a building, remove it from scene
-                if(!newBuildingId && currentBuildingId){
-                    scene.remove(buildings[x][y]);
+                if(!tile.building && existingBuildingMesh){
+                    scene.remove(existingBuildingMesh);
                     buildings[x][y] = undefined;
                 }
                 //update
-                if(newBuildingId && newBuildingId !== currentBuildingId){
-                    if(buildings[x][y]){
-                        scene.remove(buildings[x][y]);
-                    }
-                    const mesh = createAssetInstance(newBuildingId,x,y);
-                    if(mesh){
-                        scene.add(mesh);
-                    }
-                    buildings[x][y] = mesh;
+                if(tile.building && tile.building.updated){
+                    scene.remove(existingBuildingMesh);
+                    buildings[x][y] = createAssetInstance(tile.building.id,x,y,tile.building);
+                    scene.add(buildings[x][y]);
+                    tile.building.updated = false;
                 }
             }
         }

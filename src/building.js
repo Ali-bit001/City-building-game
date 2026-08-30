@@ -1,0 +1,57 @@
+export default{
+    'residential': ()=>{
+        return {
+            id : 'residential',
+            height : 1,
+            updated : true,
+            update : function(){
+                if(Math.random() < 0.1){
+                    if(this.height < 5){
+                        this.height++;
+                        this.updated = true;
+                    }
+                }
+
+            }
+        }
+    },
+    'commercial': ()=>{
+        return {
+            id : 'commercial',
+            height : 1,
+            updated : true,
+            update : function(){
+                if(Math.random() < 0.1){
+                    if(this.height < 5){
+                        this.height++;
+                        this.updated = true;
+                    }
+                }
+            }
+        }
+    },
+    'industrial': ()=>{
+        return {
+            id : 'industrial',
+            height : 1,
+            updated : true,
+            update : function(){
+                if(Math.random() < 0.1){
+                    if(this.height < 5){
+                        this.height++;
+                        this.updated = true;
+                    }
+                }
+            }
+        }
+    },
+    'road': ()=>{
+        return {
+            id: 'road',
+            updated : true,
+            update : ()=>{
+                this.updated = false;
+            }
+        }
+    }
+}
