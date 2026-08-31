@@ -1,6 +1,11 @@
 import * as THREE from "https://unpkg.com/three/build/three.module.js";
 import { createCamera } from "./camera.js";
 import { createAssetInstance } from "./assets.js";
+
+const powerInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(1)");
+const waterInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(2)");
+const populationInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(3)");
+const moneyInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(4)");
 export function createScene(){
     const gameWindow = document.getElementById("render-target");
 
@@ -54,17 +59,29 @@ export function createScene(){
                 //if player removes a building, remove it from scene
                 if(!tile.building && existingBuildingMesh){
                     scene.remove(existingBuildingMesh);
+                    city.metaData.power += existingBuildingMesh.userData.powerConsumption || 0;
+                    city.metaData.water += existingBuildingMesh.userData.waterConsumption || 0;
                     buildings[x][y] = undefined;
                 }
                 //update
                 if(tile.building && tile.building.updated){
+                    city.metaData.power += existingBuildingMesh?.userData.powerConsumption || 0;
+                    city.metaData.water += existingBuildingMesh?.userData.waterConsumption || 0;
                     scene.remove(existingBuildingMesh);
                     buildings[x][y] = createAssetInstance(tile.building.id,x,y,tile.building);
                     scene.add(buildings[x][y]);
+                    buildings[x][y].userData.powerConsumption = tile.building.powerConsumption || 0;
+                    buildings[x][y].userData.waterConsumption = tile.building.waterConsumption || 0;
+                    city.metaData.power -= tile.building.powerConsumption || 0;
+                    city.metaData.water -= tile.building.waterConsumption || 0;
                     tile.building.updated = false;
                 }
             }
         }
+        powerInfoDiv.textContent = `power : ${city.metaData.power}`;
+        waterInfoDiv.textContent = `water : ${city.metaData.water}`;
+        populationInfoDiv.textContent = `population : ${city.metaData.population}`;
+        moneyInfoDiv.textContent = `money : ${city.metaData.money}`;
     }
     function setupLights(){
         const lights = [new THREE.AmbientLight(0xffffff,0.2),

@@ -1,4 +1,10 @@
 export function createCity(size){
+    const cityMetaData = {
+        population : 0,
+        money : 1000,
+        power : 0,
+        water : 0
+    };
     const data = [];
     function initialize(){
         for(let x = 0;x < size;++x){
@@ -19,6 +25,7 @@ export function createCity(size){
     }
     initialize();
     return {
+        metaData: cityMetaData,
         size,data,update
     };
 }

@@ -30,7 +30,39 @@ export async function createGame(){
             }
         }
         else if(!tile.building && isPossibleToPlaceBuilding(city,x,y)){
-            tile.building = buildingFactory[activeTool]();
+            let buildingTemp = buildingFactory[activeTool]();
+            if(activeTool === "power"){
+                city.metaData.power += 10;
+                if(city.metaData.money >= 100){
+                    city.metaData.money -= 100;
+                }
+                else{
+                    window.alert("Not enough money to build power plant!");
+                    return;
+                }
+
+            }
+            else if(activeTool === "water"){
+                city.metaData.water += 10;
+                if(city.metaData.money >= 100){
+                    city.metaData.money -= 100;
+                }
+                else{
+                    window.alert("Not enough money to build power plant!");
+                    return;
+                }
+            }
+            else{
+                if(city.metaData.power <= 0){
+                    window.alert("Not enough power to build this building!");
+                    return;
+                }   
+                else if(city.metaData.water <= 0){
+                    window.alert("Not enough water to build this building!");
+                    return;
+                }
+            }
+            tile.building = buildingTemp;
             scene.update(city);
         }
     }
@@ -44,6 +76,9 @@ export async function createGame(){
         },
         setActiveToolId(toolId){
             activeTool = toolId;
+        },
+        getCityMetaData(){
+            return city.metaData;
         }
     };
     setInterval(()=>{

@@ -6,6 +6,8 @@ const models = {
     residential : [],
     commercial : [],
     industrial : [],
+    water: [],
+    power: []
 };
 export async function loadAssets(){
     const residential = {        
@@ -87,6 +89,8 @@ export async function loadAssets(){
         models.residential.push(await loadModel(residential[`level${i}`]()));
         models.commercial.push(await loadModel(commercial[`level${i}`]()));
         models.industrial.push(await loadModel(industrial[`level${i}`]()));
+        models.power.push(await loadModel("./public/industrial/Models/GLB format/windmill.glb"));
+        models.water.push(await loadModel("./public/industrial/Models/GLB format/water-tower.glb"));
     }
 }
 function loadModel(path){
@@ -137,7 +141,8 @@ const assets = {
         const mesh = models.residential[data.level - 1].clone();
         mesh.userData = {
             assetId : "residential",
-            x,y
+            x,y,powerConsumption : data.powerConsumption,
+            waterConsumption : data.waterConsumption
         };
         mesh.position.set(x,0,y);
         return mesh;
@@ -146,7 +151,8 @@ const assets = {
         const mesh = models.commercial[data.level - 1].clone();
         mesh.userData = {
             assetId : "commercial",
-            x,y
+            x,y,powerConsumption : data.powerConsumption,
+            waterConsumption : data.waterConsumption
         };
         mesh.position.set(x,0,y);
         return mesh;
@@ -155,7 +161,28 @@ const assets = {
         const mesh = models.industrial[data.level - 1].clone();
         mesh.userData = {
             assetId : "industrial",
-            x,y
+            x,y,powerConsumption : data.powerConsumption,
+            waterConsumption : data.waterConsumption
+        };
+        mesh.position.set(x,0,y);
+        return mesh;
+    },
+    'power' : (x,y,data)=>{
+        const mesh = models.power[0].clone();
+        mesh.userData = {
+            assetId : "power",
+            x,y,powerConsumption : data.powerConsumption,
+            waterConsumption : data.waterConsumption
+        };
+        mesh.position.set(x,0,y);
+        return mesh;
+    },
+    'water' : (x,y,data)=>{
+        const mesh = models.water[0].clone();
+        mesh.userData = {
+            assetId : "water",
+            x,y,powerConsumption : data.powerConsumption,
+            waterConsumption : data.waterConsumption
         };
         mesh.position.set(x,0,y);
         return mesh;
