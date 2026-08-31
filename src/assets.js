@@ -97,7 +97,12 @@ function loadModel(path){
                     child.castShadow = true;
                     child.receiveShadow = true;
                 }
-            })
+            });
+            const box = new THREE.Box3().setFromObject(gltf.scene);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            gltf.scene.scale.x *= 1/size.x;
+            gltf.scene.scale.z *= 1/size.z;
             resolve(gltf.scene);
 
         },undefined,(error)=>{

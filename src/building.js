@@ -49,7 +49,7 @@ export default{
         return {
             id: 'road',
             updated : true,
-            update : ()=>{
+            update : function(){
                 this.updated = false;
             }
         }

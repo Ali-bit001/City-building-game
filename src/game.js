@@ -14,6 +14,8 @@ export async function createGame(){
     scene.initialize(city);
 
     scene.onObjectSelected = (object)=>{
+        if(!object) 
+            return;
         console.log(object);
         let {x,y} = object.userData;
         const tile = city.data[x][y];
@@ -21,7 +23,13 @@ export async function createGame(){
             tile.building = undefined;
             scene.update(city);
         }
-        else if(!tile.building){
+        else if(activeTool === "road"){
+            if(!tile.building){
+                tile.building = buildingFactory[activeTool]();
+                scene.update(city);
+            }
+        }
+        else if(!tile.building && isPossibleToPlaceBuilding(city,x,y)){
             tile.building = buildingFactory[activeTool]();
             scene.update(city);
         }
@@ -43,4 +51,16 @@ export async function createGame(){
     },1000);
     scene.start();
     return game;
+}
+function isPossibleToPlaceBuilding(city,x,y){
+    if(x < 0 || x >= city.size || y < 0 || y >= city.size)
+        return false;
+    if(x - 1 >= 0 && city.data[x-1][y].building?.id == 'road')
+        return true;
+    if(x + 1 < city.size && city.data[x+1][y].building?.id == 'road')
+        return true;
+    if(y - 1 >= 0 && city.data[x][y-1].building?.id == 'road')
+        return true;
+    if(y + 1 < city.size && city.data[x][y+1].building?.id == 'road')
+        return true;
 }
