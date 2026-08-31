@@ -1,7 +1,13 @@
 import {createScene} from "./scene.js";
 import {createCity} from "./city.js";
 import buildingFactory from "./building.js";
-export function createGame(){
+import {loadAssets} from "./assets.js";
+export async function createGame(){
+    try{
+        await loadAssets();
+    } catch (error) {
+        console.error("Error loading assets:", error);
+    }
     let activeTool = "";
     const city = createCity(25);
     const scene = createScene();

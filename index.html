@@ -29,8 +29,12 @@
     <script type="module">
         import {createGame} from "./src/game.js";
         let selectedControl = document.getElementById("button-bulldoze");
-        window.onload = () =>{
-            window.game = createGame();
+        window.onload = async () =>{
+            try {
+                window.game = await createGame();
+            } catch (error) {
+                console.error("Error creating game:", error);
+            }
         }
         window.setActiveTool = (event,toolId)=>{
             if(selectedControl){

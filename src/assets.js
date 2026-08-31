@@ -1,56 +1,165 @@
 import * as THREE from "https://unpkg.com/three/build/three.module.js";
+import {GLTFLoader} from "https://unpkg.com/three/addons/loaders/GLTFLoader.js";
 const geometry = new THREE.BoxGeometry(1,1,1);
+const loader = new GLTFLoader();
+const models = {
+    residential : [],
+    commercial : [],
+    industrial : [],
+};
+export async function loadAssets(){
+    const residential = {        
+        'level1': ()=>{
+            let num = Math.floor(Math.random() * 6 % 6 + 1);
+            let temp = `0${num}`;
+            return `./public/residential/Models/GLTF format/house_type${temp}.glb`;
+        },
+        'level2': ()=>{
+            let num = Math.floor(Math.random() * 11 % 11 + 6);
+            let temp = '0';
+            if(num >= 10)
+                temp = `${num}`;
+            else
+                temp = `0${num}`;
+            return `./public/residential/Models/GLTF format/house_type${temp}.glb`;
+        },
+        'level3': ()=>{
+            let num = Math.floor(Math.random() * 11 % 11 + 11);
+            let temp = '0';
+            if(num >= 10)
+                temp = `${num}`;
+            else
+                temp = `0${num}`;
+            return `./public/residential/Models/GLTF format/house_type${temp}.glb`;
+        }
+    };
+    const commercial = {
+        'level1': ()=>{
+            let num = Math.random() * 6 % 6 + 1;
+            let temp = `0${num}`;
+            return `./public/commercial/Models/GLB format/building-a.glb`;
+        },
+        'level2': ()=>{
+            let num = Math.random() * 11 % 11 + 6;
+            let temp = '0';
+            if(num >= 10)
+                temp = `${num}`;
+            else
+                temp = `0${num}`;
+            return `./public/commercial/Models/GLB format/building-g.glb`;
+        },
+        'level3': ()=>{
+            let num = Math.random() * 11 % 11 + 16;
+            let temp = '0';
+            if(num >= 10)
+                temp = `${num}`;
+            else
+                temp = `0${num}`;
+            return `./public/commercial/Models/GLB format/building-skyscraper-a.glb`;
+        }
+    };
+    const industrial = {
+        'level1': ()=>{
+            let num = Math.random() * 6 % 6 + 1;
+            let temp = `0${num}`;
+            return `./public/industrial/Models/GLB format/building-a.glb`;
+        },
+        'level2': ()=>{
+            let num = Math.random() * 11 % 11 + 6;
+            let temp = '0';
+            if(num >= 10)
+                temp = `${num}`;
+            else
+                temp = `0${num}`;
+            return `./public/industrial/Models/GLB format/building-g.glb`;
+        },
+        'level3': ()=>{
+            let num = Math.random() * 11 % 11 + 16;
+            let temp = '0';
+            if(num >= 10)
+                temp = `${num}`;
+            else
+                temp = `0${num}`;
+            return `./public/industrial/Models/GLB format/building-t.glb`;
+        }
+    }
+    for(let i = 1;i <= 3;++i){
+        models.residential.push(await loadModel(residential[`level${i}`]()));
+        models.commercial.push(await loadModel(commercial[`level${i}`]()));
+        models.industrial.push(await loadModel(industrial[`level${i}`]()));
+    }
+}
+function loadModel(path){
+    return new Promise((resolve,reject)=>{
+        loader.load(path,(gltf)=>{
+            gltf.scene.traverse((child)=>{
+                if(child.isMesh){
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            })
+            resolve(gltf.scene);
+
+        },undefined,(error)=>{
+            console.log("Error loading model:",error);
+            reject(error);
+        })
+    });
+}
 const assets = {
     'grass' : (x,y)=>{
-        //grass geometry
         const material = new THREE.MeshLambertMaterial({color:0x00aa00});
         const mesh = new THREE.Mesh(geometry,material);
         mesh.position.set(x,-0.5,y);
-        mesh.userData = {assetId : "grass",x,y};
-        return mesh;
-    },
-    'residential' : (x,y,data)=>{
-        //residential building geometry
-        const material = new THREE.MeshLambertMaterial({color : 0x00ff00});
-        const mesh = new THREE.Mesh(geometry,material);
-        mesh.userData = {assetId : "residential",x,y};
-        mesh.scale.set(1,data.height,1);
-        mesh.position.set(x,data.height/2,y);
-        return mesh;
-
-    },
-    'industrial' : (x,y,data)=>{
-        const material = new THREE.MeshLambertMaterial({color : 0x0000ff});
-        const mesh = new THREE.Mesh(geometry,material);
-        mesh.userData = {assetId : "industrial",x,y};
-        mesh.scale.set(1,data.height,1);
-        mesh.position.set(x,data.height/2,y);
-        return mesh;
-    },
-    'commercial' : (x,y,data)=>{
-        const material = new THREE.MeshLambertMaterial({color : 0xffff00});
-        const mesh = new THREE.Mesh(geometry,material);
-        mesh.userData = {assetId : "commercial",x,y};
-        mesh.scale.set(1,data.height,1);
-        mesh.position.set(x,data.height/2,y);
+        mesh.userData = {
+            assetId : "grass",
+            x,y
+        };
         return mesh;
     },
     'road' : (x,y)=>{
-        const material = new THREE.MeshLambertMaterial({color : 0x444440});
+        const material = new THREE.MeshLambertMaterial({color:0x444400});
         const mesh = new THREE.Mesh(geometry,material);
-        mesh.userData = {assetId : "road",x,y};
+        mesh.userData = {
+            assetId : "road",
+            x,y
+        };
         mesh.position.set(x,0.5,y);
         mesh.scale.set(1,0.1,1);
         return mesh;
+    },
+    'residential' : (x,y,data)=>{
+        const mesh = models.residential[data.level - 1].clone();
+        mesh.userData = {
+            assetId : "residential",
+            x,y
+        };
+        mesh.position.set(x,0,y);
+        return mesh;
+    },
+    'commercial' : (x,y,data)=>{
+        const mesh = models.commercial[data.level - 1].clone();
+        mesh.userData = {
+            assetId : "commercial",
+            x,y
+        };
+        mesh.position.set(x,0,y);
+        return mesh;
+    },
+    'industrial' : (x,y,data)=>{
+        const mesh = models.industrial[data.level - 1].clone();
+        mesh.userData = {
+            assetId : "industrial",
+            x,y
+        };
+        mesh.position.set(x,0,y);
+        return mesh;
     }
 }
-
 export function createAssetInstance(assetId,x,y,data){
     if(assetId in assets){
         return assets[assetId](x,y,data);
     }
-    else{
-        console.warn(`Asset Id ${assetId} is not found`);
-        return undefined;
-    }
+    console.warn(`Asset with id ${assetId} not found`);
+    return undefined;
 }

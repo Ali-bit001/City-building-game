@@ -92,17 +92,28 @@ export function createScene(){
         mouse.x = (event.clientX/renderer.domElement.clientWidth) * 2 - 1;
         mouse.y = -(event.clientY/renderer.domElement.clientHeight) * 2 + 1;
         raycaster.setFromCamera(mouse,camera.camera);
-        const intersects = raycaster.intersectObjects(scene.children,false);
+        const intersects = raycaster.intersectObjects(scene.children,true);
         if(intersects.length > 0){
-            if(selectedObject){
-                selectedObject.material.emissive.setHex(0x000000);
+            const object = findSelectableObject(intersects[0].object);
+            if(object){
+                if(selectedObject){
+                    selectedObject.traverse(child=>{
+                        if(child.isMesh && child.material && child.material.emissive){
+                            child.material.emissive.set(0x000000);
+                        }
+                    })
+                }
+                selectedObject = object;
+                selectedObject.traverse(child=>{
+                    if(child.isMesh && child.material && child.material.emissive){
+                        child.material.emissive.set(0x555555);
+                    }
+                });
+                if(this.onObjectSelected){
+                    this.onObjectSelected(selectedObject);
+                }
             }
-            selectedObject = intersects[0].object;
-            selectedObject.material.emissive.setHex(0x555555);
-            console.log(`Selected object at (${selectedObject.userData.x},${selectedObject.userData.y}) with assetId ${selectedObject.userData.assetId}`);
-            if(this.onObjectSelected){
-                this.onObjectSelected(selectedObject);
-            }
+            
         }
         camera.onMouseDown(event);
     }
@@ -113,4 +124,13 @@ export function createScene(){
         camera.onMouseMove(event);
     }
     return {onObjectSelected,update,start,stop,onMouseDown,onMouseUp,onMouseMove,initialize};
+}
+function findSelectableObject(object){
+    while(object){
+        if(object.userData && object.userData.assetId){
+            return object;
+        }
+        object = object.parent;
+    }
+    return undefined;
 }

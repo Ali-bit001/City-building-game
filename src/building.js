@@ -2,12 +2,12 @@ export default{
     'residential': ()=>{
         return {
             id : 'residential',
-            height : 1,
+            level : 1,
             updated : true,
             update : function(){
                 if(Math.random() < 0.1){
-                    if(this.height < 5){
-                        this.height++;
+                    if(this.level < 3){
+                        this.level++;
                         this.updated = true;
                     }
                 }
@@ -18,12 +18,12 @@ export default{
     'commercial': ()=>{
         return {
             id : 'commercial',
-            height : 1,
+            level : 1,
             updated : true,
             update : function(){
                 if(Math.random() < 0.1){
-                    if(this.height < 5){
-                        this.height++;
+                    if(this.level < 3){
+                        this.level++;
                         this.updated = true;
                     }
                 }
@@ -33,12 +33,12 @@ export default{
     'industrial': ()=>{
         return {
             id : 'industrial',
-            height : 1,
+            level : 1,
             updated : true,
             update : function(){
                 if(Math.random() < 0.1){
-                    if(this.height < 5){
-                        this.height++;
+                    if(this.level < 3){
+                        this.level++;
                         this.updated = true;
                     }
                 }
