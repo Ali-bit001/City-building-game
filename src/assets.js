@@ -133,7 +133,7 @@ const assets = {
             assetId : "road",
             x,y
         };
-        mesh.position.set(x,0.5,y);
+        mesh.position.set(x,0.05,y);
         mesh.scale.set(1,0.1,1);
         return mesh;
     },

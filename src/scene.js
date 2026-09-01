@@ -16,6 +16,8 @@ export function createScene(){
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(gameWindow.offsetWidth,gameWindow.offsetHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     gameWindow.appendChild(renderer.domElement);
 
     const raycaster = new THREE.Raycaster();
@@ -41,6 +43,7 @@ export function createScene(){
                 const terrainId = city.data[x][y].terrainId;
                 //grass geometry
                 const grassMesh = createAssetInstance(terrainId,x,y,city.data[x][y].building);
+                grassMesh.receiveShadow = true;
                 if(grassMesh){
                     scene.add(grassMesh);
                 }
@@ -70,6 +73,8 @@ export function createScene(){
                     scene.remove(existingBuildingMesh);
                     buildings[x][y] = createAssetInstance(tile.building.id,x,y,tile.building);
                     scene.add(buildings[x][y]);
+                    buildings[x][y].castShadow = true;
+                    buildings[x][y].receiveShadow = true;
                     buildings[x][y].userData.powerConsumption = tile.building.powerConsumption || 0;
                     buildings[x][y].userData.waterConsumption = tile.building.waterConsumption || 0;
                     city.metaData.power -= tile.building.powerConsumption || 0;
@@ -84,17 +89,23 @@ export function createScene(){
         moneyInfoDiv.textContent = `money : ${city.metaData.money}`;
     }
     function setupLights(){
-        const lights = [new THREE.AmbientLight(0xffffff,0.2),
-            new THREE.DirectionalLight(0xffffff,0.3),
-            new THREE.DirectionalLight(0xffffff,0.3),
-            new THREE.DirectionalLight(0xffffff,0.3)
-        ]
-        //top down light
-        lights[1].position.set(0,1,0);
-        //random
-        lights[2].position.set(1,1,0);
-        lights[3].position.set(0,1,1);
-        scene.add(...lights);
+        const ambientLight = new THREE.AmbientLight(0xffffff,0.35);
+        scene.add(ambientLight);
+        const sun = new THREE.DirectionalLight(0xffffff,0.8);
+        sun.position.set(10,20,10);
+        sun.castShadow = true;
+        sun.shadow.mapSize.width = 2048;
+        sun.shadow.mapSize.height = 2048;
+
+        sun.shadow.camera.left = -30;
+        sun.shadow.camera.right = 30;
+        sun.shadow.camera.top = 30;
+        sun.shadow.camera.bottom = -30;
+        sun.shadow.camera.near = 1;
+        sun.shadow.camera.far = 100;
+        scene.add(sun);
+        const helper = new THREE.CameraHelper(sun.shadow.camera);
+        scene.add(helper);
     }
     function draw(){
         renderer.render(scene,camera.camera);
