@@ -12,11 +12,9 @@ export async function createGame(){
     const city = createCity(25);
     const scene = createScene();
     scene.initialize(city);
-
     scene.onObjectSelected = (object)=>{
         if(!object) 
             return;
-        console.log(object);
         let {x,y} = object.userData;
         const tile = city.data[x][y];
         if(activeTool === "bulldoze"){
@@ -63,6 +61,9 @@ export async function createGame(){
                 }
             }
             tile.building = buildingTemp;
+            tile.building.buildingId = crypto.randomUUID();
+            tile.building.x = x;
+            tile.building.y = y;
             scene.update(city);
         }
     }
@@ -72,6 +73,9 @@ export async function createGame(){
     const game={
         update(){
             city.update();
+            for(const citizen of city.citizens){
+                citizen.update(city,scene);
+            }
             scene.update(city);
         },
         setActiveToolId(toolId){

@@ -1,3 +1,4 @@
+import Citizen from "./citizen.js";
 export default{
     'residential': ()=>{
         return {
@@ -6,16 +7,28 @@ export default{
             powerConsumption : 1,
             waterConsumption : 1,
             updated : true,
-            update : function(){
+            citizens : [],
+            maxCitizens : 5,
+            buildingId : undefined,
+            update : function(availablePower,availableWater,availableCommercialBuildings,availableIndustrialBuildings){
                 if(Math.random() < 0.1){
                     if(this.level < 3){
-                        this.waterConsumption++;
-                        this.powerConsumption++;
-                        this.level++;
-                        this.updated = true;
+                        if(availablePower > 0 && availableWater > 0){
+                            this.waterConsumption++;
+                            this.powerConsumption++;
+                            this.level++;
+                            this.updated = true;
+                            this.maxCitizens += 5;
+                        }
                     }
                 }
-
+                if(this.citizens.length < this.maxCitizens && shouldSpawnCitizen() && (availableCommercialBuildings.size > 0 || availableIndustrialBuildings.size > 0)){
+                    const work = availableCommercialBuildings.size > 0 ? availableCommercialBuildings.values().next().value : availableIndustrialBuildings.values().next().value;
+                    const citizen = new Citizen(`Citizen ${Date.now()}`,Math.floor(Math.random() * 60) + 18,work, this,"sedan");
+                    work.currentEmployees++;
+                    this.citizens.push(citizen);
+                    this.updated = true;
+                }
             }
         }
     },
@@ -26,13 +39,20 @@ export default{
             waterConsumption : 1,
             level : 1,
             updated : true,
-            update : function(){
+            buildingId : undefined,
+            currentEmployees : 0,
+            maxEmployees : 5,
+            update : function(availablePower,availableWater,addEmployee){
+                if(addEmployee){
+                    this.currentEmployees++;
+                }
                 if(Math.random() < 0.1){
-                    if(this.level < 3){
+                    if(this.level < 3 && availablePower > 0 && availableWater > 0){
                         this.powerConsumption++;
                         this.waterConsumption++;
                         this.level++;
                         this.updated = true;
+                        this.maxEmployees += 5;
                     }
                 }
             }
@@ -45,13 +65,20 @@ export default{
             waterConsumption : 1,
             level : 1,
             updated : true,
-            update : function(){
+            buildingId : undefined,
+            currentEmployees : 0,
+            maxEmployees : 5,
+            update : function(availablePower,availableWater){
+                if(addEmployee){
+                    this.currentEmployees++;
+                }
                 if(Math.random() < 0.1){
-                    if(this.level < 3){
+                    if(this.level < 3 && availablePower > 0 && availableWater > 0){
                         this.level++;
                         this.powerConsumption++;
                         this.waterConsumption++;
                         this.updated = true;
+                        this.maxEmployees += 5;
                     }
                 }
             }
@@ -60,6 +87,7 @@ export default{
     'water': ()=>{
         return {
             id : 'water',
+            buildingId : undefined,
             updated : true,
             update : function(){
                 this.updated = false;
@@ -70,6 +98,7 @@ export default{
         return {
             id : 'power',
             updated : true,
+            buildingId : undefined,
             update : function(){
                 this.updated = false;
             }
@@ -84,4 +113,7 @@ export default{
             }
         }
     }
+}
+function shouldSpawnCitizen(){
+    return Math.random() < 0.1;
 }

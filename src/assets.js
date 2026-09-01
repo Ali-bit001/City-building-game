@@ -7,7 +7,8 @@ const models = {
     commercial : [],
     industrial : [],
     water: [],
-    power: []
+    power: [],
+    vehicles: []
 };
 export async function loadAssets(){
     const residential = {        
@@ -91,6 +92,7 @@ export async function loadAssets(){
         models.industrial.push(await loadModel(industrial[`level${i}`]()));
         models.power.push(await loadModel("./public/industrial/Models/GLB format/windmill.glb"));
         models.water.push(await loadModel("./public/industrial/Models/GLB format/water-tower.glb"));
+        models.vehicles.push(await loadModel("./public/vehicles/Models/GLB format/sedan.glb"));
     }
 }
 function loadModel(path){
@@ -185,6 +187,15 @@ const assets = {
             waterConsumption : data.waterConsumption
         };
         mesh.position.set(x,0,y);
+        return mesh;
+    },
+    'vehicle' : (x,y,data)=>{
+        const mesh = models.vehicles[0].clone();
+        mesh.userData = {
+            assetId : "vehicle",
+            x,y,owner : data.owner
+        };
+        mesh.position.set(x,0.1,y);
         return mesh;
     }
 }

@@ -6,6 +6,9 @@ const powerInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth
 const waterInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(2)");
 const populationInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(3)");
 const moneyInfoDiv = document.querySelector("#info-toolbar .toolbar-info-div:nth-child(4)");
+let terrain = [];
+let buildings = [];
+let vehicles = [];
 export function createScene(){
     const gameWindow = document.getElementById("render-target");
 
@@ -15,19 +18,31 @@ export function createScene(){
     const camera = createCamera(gameWindow);
 
     const renderer = new THREE.WebGLRenderer();
+    const pixelRatio = Math.min(window.devicePixelRatio,2);
+    renderer.setPixelRatio(pixelRatio);
     renderer.setSize(gameWindow.offsetWidth,gameWindow.offsetHeight);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     gameWindow.appendChild(renderer.domElement);
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let selectedObject = undefined;
 
-    let terrain = [];
-    let buildings = [];
 
+    let clock = new THREE.Clock();
     let onObjectSelected = undefined;
+    function addVehicle(vehicle){
+        vehicles.push(vehicle);
+        scene.add(vehicle.mesh);
+    }
+    function removeVehicle(vehicle){
+        const index = vehicles.indexOf(vehicle);
+        if(index !== -1){
+            vehicles.splice(index,1);
+            scene.remove(vehicle.mesh);
+        }
+    }
     function initialize(city){
         scene.clear();
         setupLights();
@@ -108,7 +123,10 @@ export function createScene(){
         scene.add(helper);
     }
     function draw(){
+        const dt = clock.getDelta();
+        updateVehicles(dt);
         renderer.render(scene,camera.camera);
+
     }
     function start(){
         renderer.setAnimationLoop(draw);
@@ -151,7 +169,7 @@ export function createScene(){
     function onMouseMove(event){
         camera.onMouseMove(event);
     }
-    return {onObjectSelected,update,start,stop,onMouseDown,onMouseUp,onMouseMove,initialize};
+    return {removeVehicle,addVehicle,onObjectSelected,update,start,stop,onMouseDown,onMouseUp,onMouseMove,initialize};
 }
 function findSelectableObject(object){
     while(object){
@@ -161,4 +179,10 @@ function findSelectableObject(object){
         object = object.parent;
     }
     return undefined;
+}
+
+function updateVehicles(dt){
+    for(const vehicle of vehicles){
+        vehicle.update(dt);
+    }
 }
