@@ -6,94 +6,66 @@ const models = {
     residential : [],
     commercial : [],
     industrial : [],
+    roads : [],
     water: [],
     power: [],
     vehicles: []
 };
 export async function loadAssets(){
-    const residential = {        
-        'level1': ()=>{
-            let num = Math.floor(Math.random() * 6 % 6 + 1);
-            let temp = `0${num}`;
-            return `./public/residential/Models/GLTF format/house_type${temp}.glb`;
-        },
-        'level2': ()=>{
-            let num = Math.floor(Math.random() * 11 % 11 + 6);
-            let temp = '0';
-            if(num >= 10)
-                temp = `${num}`;
-            else
-                temp = `0${num}`;
-            return `./public/residential/Models/GLTF format/house_type${temp}.glb`;
-        },
-        'level3': ()=>{
-            let num = Math.floor(Math.random() * 11 % 11 + 11);
-            let temp = '0';
-            if(num >= 10)
-                temp = `${num}`;
-            else
-                temp = `0${num}`;
-            return `./public/residential/Models/GLTF format/house_type${temp}.glb`;
-        }
-    };
-    const commercial = {
-        'level1': ()=>{
-            let num = Math.random() * 6 % 6 + 1;
-            let temp = `0${num}`;
-            return `./public/commercial/Models/GLB format/building-a.glb`;
-        },
-        'level2': ()=>{
-            let num = Math.random() * 11 % 11 + 6;
-            let temp = '0';
-            if(num >= 10)
-                temp = `${num}`;
-            else
-                temp = `0${num}`;
-            return `./public/commercial/Models/GLB format/building-g.glb`;
-        },
-        'level3': ()=>{
-            let num = Math.random() * 11 % 11 + 16;
-            let temp = '0';
-            if(num >= 10)
-                temp = `${num}`;
-            else
-                temp = `0${num}`;
-            return `./public/commercial/Models/GLB format/building-skyscraper-a.glb`;
-        }
-    };
-    const industrial = {
-        'level1': ()=>{
-            let num = Math.random() * 6 % 6 + 1;
-            let temp = `0${num}`;
-            return `./public/industrial/Models/GLB format/building-a.glb`;
-        },
-        'level2': ()=>{
-            let num = Math.random() * 11 % 11 + 6;
-            let temp = '0';
-            if(num >= 10)
-                temp = `${num}`;
-            else
-                temp = `0${num}`;
-            return `./public/industrial/Models/GLB format/building-g.glb`;
-        },
-        'level3': ()=>{
-            let num = Math.random() * 11 % 11 + 16;
-            let temp = '0';
-            if(num >= 10)
-                temp = `${num}`;
-            else
-                temp = `0${num}`;
-            return `./public/industrial/Models/GLB format/building-t.glb`;
+    models.residential = [];
+    models.commercial = [];
+    models.industrial = [];
+    models.roads = [];
+    models.power = [];
+    models.water = [];
+    models.vehicles = [];
+
+    const residential = [
+        modelPaths("./public/residential/Models/GLTF format/house_type", 1, 6),
+        modelPaths("./public/residential/Models/GLTF format/house_type", 7, 14),
+        modelPaths("./public/residential/Models/GLTF format/house_type", 15, 21)
+    ];
+    const commercial = [
+        letterModelPaths("./public/commercial/Models/GLB format/building-", "a", "f"),
+        letterModelPaths("./public/commercial/Models/GLB format/building-", "g", "n"),
+        letterModelPaths("./public/commercial/Models/GLB format/building-skyscraper-", "a", "e")
+    ];
+    const industrial = [
+        letterModelPaths("./public/industrial/Models/GLB format/building-", "a", "f"),
+        letterModelPaths("./public/industrial/Models/GLB format/building-", "g", "n"),
+        letterModelPaths("./public/industrial/Models/GLB format/building-", "o", "t")
+    ];
+    const roadPath = "./public/roads/Models/GLB format/road-straight.glb";
+
+    for(const [target, paths] of [
+        [models.residential, residential],
+        [models.commercial, commercial],
+        [models.industrial, industrial]
+    ]){
+        for(const levelPaths of paths){
+            target.push(await Promise.all(levelPaths.map(loadModel)));
         }
     }
-    for(let i = 1;i <= 3;++i){
-        models.residential.push(await loadModel(residential[`level${i}`]()));
-        models.commercial.push(await loadModel(commercial[`level${i}`]()));
-        models.industrial.push(await loadModel(industrial[`level${i}`]()));
-        models.power.push(await loadModel("./public/industrial/Models/GLB format/windmill.glb"));
-        models.water.push(await loadModel("./public/industrial/Models/GLB format/water-tower.glb"));
-        models.vehicles.push(await loadModel("./public/vehicles/Models/GLB format/sedan.glb"));
-    }
+    models.roads = [await loadModel(roadPath)];
+    models.power = [await loadModel("./public/industrial/Models/GLB format/windmill.glb")];
+    models.water = [await loadModel("./public/industrial/Models/GLB format/water-tower.glb")];
+    models.vehicles = [await loadModel("./public/vehicles/Models/GLB format/sedan.glb")];
+}
+function modelPaths(prefix, first, last){
+    return Array.from({length: last - first + 1}, (_, index) => {
+        const number = String(first + index).padStart(2, "0");
+        return `${prefix}${number}.glb`;
+    });
+}
+function letterModelPaths(prefix, first, last){
+    const firstCode = first.charCodeAt(0);
+    const lastCode = last.charCodeAt(0);
+    return Array.from({length: lastCode - firstCode + 1}, (_, index) =>
+        `${prefix}${String.fromCharCode(firstCode + index)}.glb`
+    );
+}
+function randomModel(modelList){
+    return modelList[Math.floor(Math.random() * modelList.length)];
 }
 function loadModel(path){
     return new Promise((resolve,reject)=>{
@@ -129,8 +101,7 @@ const assets = {
         return mesh;
     },
     'road' : (x,y)=>{
-        const material = new THREE.MeshLambertMaterial({color:0x444400});
-        const mesh = new THREE.Mesh(geometry,material);
+        const mesh = models.roads[0].clone();
         mesh.userData = {
             assetId : "road",
             x,y
@@ -140,7 +111,7 @@ const assets = {
         return mesh;
     },
     'residential' : (x,y,data)=>{
-        const mesh = models.residential[data.level - 1].clone();
+        const mesh = randomModel(models.residential[data.level - 1]).clone();
         mesh.userData = {
             assetId : "residential",
             x,y,powerConsumption : data.powerConsumption,
@@ -150,7 +121,7 @@ const assets = {
         return mesh;
     },
     'commercial' : (x,y,data)=>{
-        const mesh = models.commercial[data.level - 1].clone();
+        const mesh = randomModel(models.commercial[data.level - 1]).clone();
         mesh.userData = {
             assetId : "commercial",
             x,y,powerConsumption : data.powerConsumption,
@@ -160,7 +131,7 @@ const assets = {
         return mesh;
     },
     'industrial' : (x,y,data)=>{
-        const mesh = models.industrial[data.level - 1].clone();
+        const mesh = randomModel(models.industrial[data.level - 1]).clone();
         mesh.userData = {
             assetId : "industrial",
             x,y,powerConsumption : data.powerConsumption,
@@ -190,7 +161,7 @@ const assets = {
         return mesh;
     },
     'vehicle' : (x,y,data)=>{
-        const mesh = models.vehicles[0].clone();
+        const mesh = randomModel(models.vehicles).clone();
         mesh.userData = {
             assetId : "vehicle",
             x,y,owner : data.owner

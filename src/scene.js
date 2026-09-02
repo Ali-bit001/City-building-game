@@ -96,6 +96,9 @@ export function createScene(){
                     city.metaData.water -= tile.building.waterConsumption || 0;
                     tile.building.updated = false;
                 }
+                else if(tile.building && tile.building.id === 'residential'){
+                    city.metaData.money += tile.building.citizens.length * 10;
+                }
             }
         }
         powerInfoDiv.textContent = `power : ${city.metaData.power}`;
@@ -119,8 +122,6 @@ export function createScene(){
         sun.shadow.camera.near = 1;
         sun.shadow.camera.far = 100;
         scene.add(sun);
-        const helper = new THREE.CameraHelper(sun.shadow.camera);
-        scene.add(helper);
     }
     function draw(){
         const dt = clock.getDelta();
@@ -182,7 +183,19 @@ function findSelectableObject(object){
 }
 
 function updateVehicles(dt){
-    for(const vehicle of vehicles){
+    for(let index = vehicles.length - 1; index >= 0; index--){
+        const vehicle = vehicles[index];
         vehicle.update(dt);
+        if(vehicle.finished){
+            removeVehicleFromScene(vehicle);
+        }
+    }
+}
+
+function removeVehicleFromScene(vehicle){
+    const index = vehicles.indexOf(vehicle);
+    if(index !== -1){
+        vehicles.splice(index,1);
+        vehicle.mesh.parent?.remove(vehicle.mesh);
     }
 }
