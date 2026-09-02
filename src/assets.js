@@ -6,7 +6,6 @@ const models = {
     residential : [],
     commercial : [],
     industrial : [],
-    roads : [],
     water: [],
     power: [],
     vehicles: []
@@ -15,7 +14,6 @@ export async function loadAssets(){
     models.residential = [];
     models.commercial = [];
     models.industrial = [];
-    models.roads = [];
     models.power = [];
     models.water = [];
     models.vehicles = [];
@@ -35,8 +33,6 @@ export async function loadAssets(){
         letterModelPaths("./public/industrial/Models/GLB format/building-", "g", "n"),
         letterModelPaths("./public/industrial/Models/GLB format/building-", "o", "t")
     ];
-    const roadPath = "./public/roads/Models/GLB format/road-straight.glb";
-
     for(const [target, paths] of [
         [models.residential, residential],
         [models.commercial, commercial],
@@ -46,7 +42,6 @@ export async function loadAssets(){
             target.push(await Promise.all(levelPaths.map(loadModel)));
         }
     }
-    models.roads = [await loadModel(roadPath)];
     models.power = [await loadModel("./public/industrial/Models/GLB format/windmill.glb")];
     models.water = [await loadModel("./public/industrial/Models/GLB format/water-tower.glb")];
     models.vehicles = [await loadModel("./public/vehicles/Models/GLB format/sedan.glb")];
@@ -101,7 +96,8 @@ const assets = {
         return mesh;
     },
     'road' : (x,y)=>{
-        const mesh = models.roads[0].clone();
+        const material = new THREE.MeshLambertMaterial({color:0x000000});
+        const mesh = new THREE.Mesh(geometry,material);
         mesh.userData = {
             assetId : "road",
             x,y

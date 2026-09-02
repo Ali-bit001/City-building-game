@@ -42,10 +42,9 @@ export default{
             buildingId : undefined,
             currentEmployees : 0,
             maxEmployees : 5,
-            update : function(availablePower,availableWater,addEmployee){
-                if(addEmployee){
-                    this.currentEmployees++;
-                }
+            taxPaid : 0,
+            update : function(availablePower,availableWater){
+                this.taxPaid = this.currentEmployees * 5 + this.level * 10;
                 if(Math.random() < 0.1){
                     if(this.level < 3 && availablePower > 0 && availableWater > 0){
                         this.powerConsumption++;
@@ -68,10 +67,9 @@ export default{
             buildingId : undefined,
             currentEmployees : 0,
             maxEmployees : 5,
+            taxPaid : 0,
             update : function(availablePower,availableWater){
-                if(addEmployee){
-                    this.currentEmployees++;
-                }
+                this.taxPaid = this.currentEmployees * 5 + this.level * 10;
                 if(Math.random() < 0.1){
                     if(this.level < 3 && availablePower > 0 && availableWater > 0){
                         this.level++;
@@ -89,6 +87,7 @@ export default{
             id : 'water',
             buildingId : undefined,
             updated : true,
+            maintenanceCost : 10,
             update : function(){
                 this.updated = false;
             }
@@ -99,6 +98,7 @@ export default{
             id : 'power',
             updated : true,
             buildingId : undefined,
+            maintenanceCost : 10,
             update : function(){
                 this.updated = false;
             }

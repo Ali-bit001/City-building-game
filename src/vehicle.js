@@ -19,6 +19,9 @@ export default class Vehicle{
         const dx = targetX - this.mesh.position.x;
         const dy = targetY - this.mesh.position.z;
         const distance = Math.sqrt(dx * dx + dy * dy);
+        if(distance > 0.000001){
+            this.mesh.rotation.y = Math.atan2(dy,dx) - Math.PI/2;
+        }
         const movement = this.speed*dt;
         if(distance <= movement){
             this.mesh.position.x = targetX;
@@ -29,6 +32,7 @@ export default class Vehicle{
                 if(this.onArrive){
                     this.onArrive();
                 }
+                return;
             }
         }
         this.mesh.position.x += (dx / (distance + 0.000001)) * movement;

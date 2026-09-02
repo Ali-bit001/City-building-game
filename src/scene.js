@@ -99,6 +99,8 @@ export function createScene(){
                 else if(tile.building && tile.building.id === 'residential'){
                     city.metaData.money += tile.building.citizens.length * 10;
                 }
+                city.metaData.money -= tile.building?.maintenanceCost? tile.building.maintenanceCost : 0;
+                city.metaData.money += tile.building?.taxPaid? tile.building.taxPaid : 0;
             }
         }
         powerInfoDiv.textContent = `power : ${city.metaData.power}`;
@@ -124,7 +126,7 @@ export function createScene(){
         scene.add(sun);
     }
     function draw(){
-        const dt = clock.getDelta();
+        const dt = Math.min(clock.getDelta(),0.05);
         updateVehicles(dt);
         renderer.render(scene,camera.camera);
 

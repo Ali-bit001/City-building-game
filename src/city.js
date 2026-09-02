@@ -1,7 +1,7 @@
 export function createCity(size){
     const cityMetaData = {
         population : 0,
-        money : 1000,
+        money : 10000,
         power : 0,
         water : 0
     };
@@ -29,13 +29,13 @@ export function createCity(size){
                         commercialBuildings.add(commercialBuilding);
                     }
                 }
-                else if(data[x][y].building?.id == 'commercial' && data[x][y].building.currentEmployees == data[x][y].building.maxEmployees){
+                if(data[x][y].building?.id == 'commercial' && data[x][y].building.currentEmployees == data[x][y].building.maxEmployees){
                     commercialBuildings.delete(data[x][y].building);
                 }
-                else if(data[x][y].building?.id == 'industrial' && data[x][y].building.currentEmployees < data[x][y].building.maxEmployees){
+                if(data[x][y].building?.id == 'industrial' && data[x][y].building.currentEmployees < data[x][y].building.maxEmployees){
                     industrialBuildings.add(data[x][y].building);
                 }
-                else if(data[x][y].building?.id == 'industrial' && data[x][y].building.currentEmployees == data[x][y].building.maxEmployees){
+                if(data[x][y].building?.id == 'industrial' && data[x][y].building.currentEmployees == data[x][y].building.maxEmployees){
                     industrialBuildings.delete(data[x][y].building);
                 }
                 data[x][y].building?.update(cityMetaData.power,cityMetaData.water,commercialBuildings,industrialBuildings);
